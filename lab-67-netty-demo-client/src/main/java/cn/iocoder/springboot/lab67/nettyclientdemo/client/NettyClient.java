@@ -22,7 +22,7 @@ public class NettyClient {
     /**
      * 重连频率，单位：秒
      */
-    private static final Integer RECONNECT_SECONDS = 20;
+    private static final Integer RECONNECT_SECONDS = 2;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 

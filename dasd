@@ -1,0 +1,83 @@
+[1mdiff --git a/lab-67-netty-demo-client/src/main/java/cn/iocoder/springboot/lab67/nettyclientdemo/client/NettyClient.java b/lab-67-netty-demo-client/src/main/java/cn/iocoder/springboot/lab67/nettyclientdemo/client/NettyClient.java[m
+[1mindex 476e9bc..3e81d10 100644[m
+[1m--- a/lab-67-netty-demo-client/src/main/java/cn/iocoder/springboot/lab67/nettyclientdemo/client/NettyClient.java[m
+[1m+++ b/lab-67-netty-demo-client/src/main/java/cn/iocoder/springboot/lab67/nettyclientdemo/client/NettyClient.java[m
+[36m@@ -22,7 +22,7 @@[m [mpublic class NettyClient {[m
+     /**[m
+      * 重连频率，单位：秒[m
+      */[m
+[31m-    private static final Integer RECONNECT_SECONDS = 20;[m
+[32m+[m[32m    private static final Integer RECONNECT_SECONDS = 2;[m
+ [m
+     private Logger logger = LoggerFactory.getLogger(getClass());[m
+ [m
+[1mdiff --git a/lab-67-netty-demo-client/target/classes/cn/iocoder/springboot/lab67/nettyclientdemo/client/NettyClient.class b/lab-67-netty-demo-client/target/classes/cn/iocoder/springboot/lab67/nettyclientdemo/client/NettyClient.class[m
+[1mindex 5959154..b051873 100644[m
+Binary files a/lab-67-netty-demo-client/target/classes/cn/iocoder/springboot/lab67/nettyclientdemo/client/NettyClient.class and b/lab-67-netty-demo-client/target/classes/cn/iocoder/springboot/lab67/nettyclientdemo/client/NettyClient.class differ
+[1mdiff --git a/lab-67-netty-demo-common/src/main/java/cn/iocoder/springboot/lab67/nettycommondemo/disruptor/MessageDispatcherEventHandler.java b/lab-67-netty-demo-common/src/main/java/cn/iocoder/springboot/lab67/nettycommondemo/disruptor/MessageDispatcherEventHandler.java[m
+[1mindex bd3c409..fbf0979 100644[m
+[1m--- a/lab-67-netty-demo-common/src/main/java/cn/iocoder/springboot/lab67/nettycommondemo/disruptor/MessageDispatcherEventHandler.java[m
+[1m+++ b/lab-67-netty-demo-common/src/main/java/cn/iocoder/springboot/lab67/nettycommondemo/disruptor/MessageDispatcherEventHandler.java[m
+[36m@@ -16,9 +16,12 @@[m [mimport org.springframework.beans.factory.annotation.Autowired;[m
+  **/[m
+ public class MessageDispatcherEventHandler implements EventHandler<InvocationWrapper> {[m
+ [m
+[31m-    @Autowired[m
+     private MessageHandlerContainer messageHandlerContainer;[m
+ [m
+[32m+[m[32m    public MessageDispatcherEventHandler(MessageHandlerContainer messageHandlerContainer) {[m
+[32m+[m[32m        this.messageHandlerContainer = messageHandlerContainer;[m
+[32m+[m[32m    }[m
+[32m+[m
+     @Override[m
+     public void onEvent(InvocationWrapper event, long sequence, boolean endOfBatch) throws Exception {[m
+ [m
+[1mdiff --git a/lab-67-netty-demo-common/target/classes/cn/iocoder/springboot/lab67/nettycommondemo/disruptor/MessageDispatcherEventHandler.class b/lab-67-netty-demo-common/target/classes/cn/iocoder/springboot/lab67/nettycommondemo/disruptor/MessageDispatcherEventHandler.class[m
+[1mindex ae83c26..b15a4c7 100644[m
+Binary files a/lab-67-netty-demo-common/target/classes/cn/iocoder/springboot/lab67/nettycommondemo/disruptor/MessageDispatcherEventHandler.class and b/lab-67-netty-demo-common/target/classes/cn/iocoder/springboot/lab67/nettycommondemo/disruptor/MessageDispatcherEventHandler.class differ
+[1mdiff --git a/lab-67-netty-demo-server/src/main/java/cn/iocoder/springboot/lab67/nettyserverdemo/server/DisruptorBoot.java b/lab-67-netty-demo-server/src/main/java/cn/iocoder/springboot/lab67/nettyserverdemo/server/DisruptorBoot.java[m
+[1mindex 902b7b9..342ddd9 100644[m
+[1m--- a/lab-67-netty-demo-server/src/main/java/cn/iocoder/springboot/lab67/nettyserverdemo/server/DisruptorBoot.java[m
+[1m+++ b/lab-67-netty-demo-server/src/main/java/cn/iocoder/springboot/lab67/nettyserverdemo/server/DisruptorBoot.java[m
+[36m@@ -1,11 +1,13 @@[m
+ package cn.iocoder.springboot.lab67.nettyserverdemo.server;[m
+ [m
+[32m+[m[32mimport cn.iocoder.springboot.lab67.nettycommondemo.dispatcher.MessageHandlerContainer;[m
+ import cn.iocoder.springboot.lab67.nettycommondemo.disruptor.InvocationWrapperEventFactory;[m
+ import cn.iocoder.springboot.lab67.nettycommondemo.disruptor.MessageDispatcherEventHandler;[m
+ import com.lmax.disruptor.RingBuffer;[m
+ import com.lmax.disruptor.YieldingWaitStrategy;[m
+ import com.lmax.disruptor.dsl.Disruptor;[m
+ import com.lmax.disruptor.dsl.ProducerType;[m
+[32m+[m[32mimport org.springframework.beans.factory.annotation.Autowired;[m
+ import org.springframework.stereotype.Component;[m
+ [m
+ import javax.annotation.PostConstruct;[m
+[36m@@ -26,6 +28,9 @@[m [mpublic class DisruptorBoot {[m
+     private RingBuffer ringBuffer;[m
+ [m
+     private Disruptor disruptor;[m
+[32m+[m
+[32m+[m[32m    @Autowired[m
+[32m+[m[32m    private MessageHandlerContainer messageHandlerContainer;[m
+     /**[m
+      * 由于单消费者模式，单线程便就好[m
+       */[m
+[36m@@ -42,7 +47,7 @@[m [mpublic class DisruptorBoot {[m
+                 new YieldingWaitStrategy()[m
+         );[m
+ [m
+[31m-        disruptor.handleEventsWith(new MessageDispatcherEventHandler());[m
+[32m+[m[32m        disruptor.handleEventsWith(new MessageDispatcherEventHandler(messageHandlerContainer));[m
+         ringBuffer = disruptor.start();[m
+ [m
+     }[m
+[1mdiff --git a/lab-67-netty-demo-server/target/classes/cn/iocoder/springboot/lab67/nettyserverdemo/server/DisruptorBoot.class b/lab-67-netty-demo-server/target/classes/cn/iocoder/springboot/lab67/nettyserverdemo/server/DisruptorBoot.class[m
+[1mindex 099ff35..f53af2e 100644[m
+Binary files a/lab-67-netty-demo-server/target/classes/cn/iocoder/springboot/lab67/nettyserverdemo/server/DisruptorBoot.class and b/lab-67-netty-demo-server/target/classes/cn/iocoder/springboot/lab67/nettyserverdemo/server/DisruptorBoot.class differ
+[1mdiff --git a/lab-67-netty-demo-server/target/classes/cn/iocoder/springboot/lab67/nettyserverdemo/server/handler/MessageDispatcherHandler$InvocationEventTranslator.class b/lab-67-netty-demo-server/target/classes/cn/iocoder/springboot/lab67/nettyserverdemo/server/handler/MessageDispatcherHandler$InvocationEventTranslator.class[m
+[1mindex 1120f79..46457e7 100644[m
+Binary files a/lab-67-netty-demo-server/target/classes/cn/iocoder/springboot/lab67/nettyserverdemo/server/handler/MessageDispatcherHandler$InvocationEventTranslator.class and b/lab-67-netty-demo-server/target/classes/cn/iocoder/springboot/lab67/nettyserverdemo/server/handler/MessageDispatcherHandler$InvocationEventTranslator.class differ
+[1mdiff --git a/lab-67-netty-demo-server/target/classes/cn/iocoder/springboot/lab67/nettyserverdemo/server/handler/MessageDispatcherHandler.class b/lab-67-netty-demo-server/target/classes/cn/iocoder/springboot/lab67/nettyserverdemo/server/handler/MessageDispatcherHandler.class[m
+[1mindex 2cff33a..4a6848b 100644[m
+Binary files a/lab-67-netty-demo-server/target/classes/cn/iocoder/springboot/lab67/nettyserverdemo/server/handler/MessageDispatcherHandler.class and b/lab-67-netty-demo-server/target/classes/cn/iocoder/springboot/lab67/nettyserverdemo/server/handler/MessageDispatcherHandler.class differ

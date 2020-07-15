@@ -8,6 +8,7 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * @ClassName MessageDispatcherHandler
@@ -16,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @Description TODO
  **/
 @ChannelHandler.Sharable
+@Component
 public class MessageDispatcherHandler extends SimpleChannelInboundHandler<Invocation> {
 
 
@@ -24,6 +26,8 @@ public class MessageDispatcherHandler extends SimpleChannelInboundHandler<Invoca
 
     @Override
     protected void channelRead0(ChannelHandlerContext ctx, Invocation msg) throws Exception {
+
+
         disruptorBoot.getRingBuffer().publishEvent(new InvocationEventTranslator(ctx,msg));
     }
 

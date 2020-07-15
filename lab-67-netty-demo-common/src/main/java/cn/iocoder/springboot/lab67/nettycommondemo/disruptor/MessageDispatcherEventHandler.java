@@ -16,8 +16,11 @@ import org.springframework.beans.factory.annotation.Autowired;
  **/
 public class MessageDispatcherEventHandler implements EventHandler<InvocationWrapper> {
 
-    @Autowired
     private MessageHandlerContainer messageHandlerContainer;
+
+    public MessageDispatcherEventHandler(MessageHandlerContainer messageHandlerContainer) {
+        this.messageHandlerContainer = messageHandlerContainer;
+    }
 
     @Override
     public void onEvent(InvocationWrapper event, long sequence, boolean endOfBatch) throws Exception {

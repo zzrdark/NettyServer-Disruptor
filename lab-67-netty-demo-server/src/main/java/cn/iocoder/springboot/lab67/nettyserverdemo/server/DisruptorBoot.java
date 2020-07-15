@@ -1,11 +1,13 @@
 package cn.iocoder.springboot.lab67.nettyserverdemo.server;
 
+import cn.iocoder.springboot.lab67.nettycommondemo.dispatcher.MessageHandlerContainer;
 import cn.iocoder.springboot.lab67.nettycommondemo.disruptor.InvocationWrapperEventFactory;
 import cn.iocoder.springboot.lab67.nettycommondemo.disruptor.MessageDispatcherEventHandler;
 import com.lmax.disruptor.RingBuffer;
 import com.lmax.disruptor.YieldingWaitStrategy;
 import com.lmax.disruptor.dsl.Disruptor;
 import com.lmax.disruptor.dsl.ProducerType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -26,6 +28,9 @@ public class DisruptorBoot {
     private RingBuffer ringBuffer;
 
     private Disruptor disruptor;
+
+    @Autowired
+    private MessageHandlerContainer messageHandlerContainer;
     /**
      * 由于单消费者模式，单线程便就好
       */
@@ -42,7 +47,7 @@ public class DisruptorBoot {
                 new YieldingWaitStrategy()
         );
 
-        disruptor.handleEventsWith(new MessageDispatcherEventHandler());
+        disruptor.handleEventsWith(new MessageDispatcherEventHandler(messageHandlerContainer));
         ringBuffer = disruptor.start();
 
     }

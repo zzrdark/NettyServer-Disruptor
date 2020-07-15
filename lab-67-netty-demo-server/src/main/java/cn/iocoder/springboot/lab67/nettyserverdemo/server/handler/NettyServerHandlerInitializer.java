@@ -3,6 +3,7 @@ package cn.iocoder.springboot.lab67.nettyserverdemo.server.handler;
 import cn.iocoder.springboot.lab67.nettycommondemo.codec.InvocationDecoder;
 import cn.iocoder.springboot.lab67.nettycommondemo.codec.InvocationEncoder;
 import cn.iocoder.springboot.lab67.nettycommondemo.dispatcher.MessageDispatcher;
+import cn.iocoder.springboot.lab67.nettycommondemo.disruptor.MessageDispatcherEventHandler;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.ChannelPipeline;
@@ -21,7 +22,7 @@ public class NettyServerHandlerInitializer extends ChannelInitializer<Channel> {
     private static final Integer READ_TIMEOUT_SECONDS = 3 * 60;
 
     @Autowired
-    private MessageDispatcher messageDispatcher;
+    private MessageDispatcherHandler messageDispatcherHandler;
     @Autowired
     private NettyServerHandler nettyServerHandler;
 
@@ -38,7 +39,7 @@ public class NettyServerHandlerInitializer extends ChannelInitializer<Channel> {
                 // 解码器
                 .addLast(new InvocationDecoder())
                 // 消息分发器
-                .addLast(messageDispatcher)
+                .addLast(messageDispatcherHandler)
                 // 服务端处理器
                 .addLast(nettyServerHandler)
         ;

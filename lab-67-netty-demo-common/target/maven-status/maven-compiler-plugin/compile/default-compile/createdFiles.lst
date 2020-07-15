@@ -1,0 +1,7 @@
+cn\iocoder\springboot\lab67\nettycommondemo\dispatcher\MessageHandler.class
+cn\iocoder\springboot\lab67\nettycommondemo\codec\InvocationEncoder.class
+cn\iocoder\springboot\lab67\nettycommondemo\codec\Invocation.class
+cn\iocoder\springboot\lab67\nettycommondemo\dispatcher\Message.class
+cn\iocoder\springboot\lab67\nettycommondemo\dispatcher\MessageDispatcher.class
+cn\iocoder\springboot\lab67\nettycommondemo\dispatcher\MessageHandlerContainer.class
+cn\iocoder\springboot\lab67\nettycommondemo\codec\InvocationDecoder.class
